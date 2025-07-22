@@ -28,13 +28,18 @@ class AIChatCog(commands.Cog):
         )
 
     def createEmbed(self, chatResponse: ChatResponse) -> discord.Embed:
-        return (
-            discord.Embed(description=chatResponse.message)
-            .set_author(name=chatResponse.character.name)
-            .set_footer(
-                text=f"今の気分: {chatResponse.character.feeling} | 現在地: {chatResponse.character.currentLocation}"
-            )
+        embed = discord.Embed(description=chatResponse.message)
+        embed.set_author(name=chatResponse.character.name)
+        embed.set_footer(
+            text=f"今の気分: {chatResponse.character.feeling} | 現在地: {chatResponse.character.currentLocation}"
         )
+    
+        # 選択肢を箇条書きでEmbedに追加
+        if chatResponse.choices:
+            formatted_choices = "\n".join(f"• {choice}" for choice in chatResponse.choices)
+            embed.add_field(name="選択肢一覧", value=formatted_choices, inline=False)
+    
+        return embed
 
     def createResponseView(
         self, chatResponse: ChatResponse, returnCallback, modalCallback
