@@ -36,7 +36,7 @@ class AIChatCog(commands.Cog):
     
         # 選択肢を箇条書きでEmbedに追加
         if chatResponse.choices:
-            formatted_choices = "\n".join(f"• {choice}" for choice in chatResponse.choices)
+            formatted_choices = "\n".join(f"- {choice}" for choice in chatResponse.choices)
             embed.add_field(name="選択肢一覧", value=formatted_choices, inline=False)
     
         return embed
