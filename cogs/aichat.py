@@ -51,7 +51,7 @@ class AIChatCog(commands.Cog):
         for i, choice in enumerate(chatResponse.choices):
             button = discord.ui.Button(
                 style=discord.ButtonStyle.blurple,
-                emoji=f":regional_indicator_{chr(97 + i)}:",
+                emoji=chr(0x1F1E6 + i),
                 custom_id=choice,
             )
             button.callback = returnCallback
