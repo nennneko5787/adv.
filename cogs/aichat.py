@@ -90,7 +90,7 @@ class AIChatCog(commands.Cog):
 
         response = await self.ai.chat.completions.parse(
             messages=messages,
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             response_format=ChatResponse,
         )
         messages.append(
@@ -110,7 +110,7 @@ class AIChatCog(commands.Cog):
             await inter.edit_original_response(content="生成中...", view=None)
             response = await self.ai.chat.completions.parse(
                 messages=messages,
-                model="gemini-2.0-flash",
+                model="gemini-2.5-flash",
                 response_format=ChatResponse,
             )
             messages.append(
@@ -145,7 +145,7 @@ class AIChatCog(commands.Cog):
                     )
                     response = await _self.ai.chat.completions.parse(
                         messages=messages,
-                        model="gemini-2.0-flash",
+                        model="gemini-2.5-flash",
                         response_format=ChatResponse,
                     )
                     messages.append(
