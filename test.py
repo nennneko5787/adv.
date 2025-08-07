@@ -22,7 +22,7 @@ def main():
             },
             {"role": "user", "content": "こんにちは"},
         ],
-        model="gemini-2.5-pro",
+        model="gemini-2.0-flash",
         response_format=ChatResponse,
     )
     print(response)

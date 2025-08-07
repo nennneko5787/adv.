@@ -33,22 +33,27 @@ class AIChatCog(commands.Cog):
         embed.set_footer(
             text=f"今の気分: {chatResponse.character.feeling} | 現在地: {chatResponse.character.currentLocation}"
         )
-    
+
         # 選択肢を箇条書きでEmbedに追加
         if chatResponse.choices:
-            formatted_choices = "\n".join(f"- {choice}" for choice in chatResponse.choices)
+            formatted_choices = "\n".join(
+                f"- :regional_indicator_{chr(97 + i)}: {choice}"
+                for i, choice in enumerate(chatResponse.choices)
+            )
             embed.add_field(name="選択肢一覧", value=formatted_choices, inline=False)
-    
+
         return embed
 
     def createResponseView(
         self, chatResponse: ChatResponse, returnCallback, modalCallback
     ) -> discord.ui.View:
         view = discord.ui.View(timeout=None)
-        for choice in chatResponse.choices:
+        for i, choice in enumerate(chatResponse.choices):
             button = discord.ui.Button(
                 style=discord.ButtonStyle.blurple,
-                label=choice,
+                emoji=discord.PartialEmoji.from_str(
+                    f":regional_indicator_{chr(97 + i)}:"
+                ),
                 custom_id=choice,
             )
             button.callback = returnCallback
@@ -85,7 +90,7 @@ class AIChatCog(commands.Cog):
 
         response = await self.ai.chat.completions.parse(
             messages=messages,
-            model="gemini-2.5-pro",
+            model="gemini-2.0-pro",
             response_format=ChatResponse,
         )
         messages.append(
