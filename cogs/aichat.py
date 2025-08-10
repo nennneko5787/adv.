@@ -7,11 +7,25 @@ from discord.ext import commands
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
+MODEL = "gpt-5-chat-latest"
+
+
+class BodyInfo(BaseModel):
+    height: float
+    weight: float
+    bmi: float
+    bodyFatPercentage: float
+    bust: float
+    waist: float
+    hip: float
+
 
 class Character(BaseModel):
     name: str
     feeling: str
+    favorability: float
     currentLocation: str
+    bodyInfo: BodyInfo
 
 
 class ChatResponse(BaseModel):
@@ -27,22 +41,45 @@ class AIChatCog(commands.Cog):
             api_key="paicha_is_god", base_url="https://capi.voids.top/v2/"
         )
 
-    def createEmbed(self, chatResponse: ChatResponse) -> discord.Embed:
-        embed = discord.Embed(description=chatResponse.message)
-        embed.set_author(name=chatResponse.character.name)
-        embed.set_footer(
-            text=f"今の気分: {chatResponse.character.feeling} | 現在地: {chatResponse.character.currentLocation}"
+    def createEmbed(self, chatResponse: ChatResponse) -> List[discord.Embed]:
+        embeds: List[discord.Embed] = []
+
+        embeds.append(
+            discord.Embed(
+                title="情報",
+                description=f"""
+                    好感度: {chatResponse.character.favorability * 100}
+                    今の気分: {chatResponse.character.feeling}
+                    現在地: {chatResponse.character.currentLocation}
+                """.replace("    ", ""),
+            )
+            .add_field(
+                name="体の状態",
+                value=f"""
+                    身長: {chatResponse.character.bodyInfo.height}
+                    体重: {chatResponse.character.bodyInfo.weight}
+                    BMI: {chatResponse.character.bodyInfo.bmi}
+                    体脂肪率: {chatResponse.character.bodyInfo.bodyFatPercentage}
+                    B: {chatResponse.character.bodyInfo.bust}
+                    W: {chatResponse.character.bodyInfo.waist}
+                    H: {chatResponse.character.bodyInfo.hip}
+                """.replace("    ", ""),
+            )
+            .set_author(name=chatResponse.character.name)
         )
 
-        # 選択肢を箇条書きでEmbedに追加
         if chatResponse.choices:
-            formatted_choices = "\n".join(
+            formattedChoices = "\n".join(
                 f"- :regional_indicator_{chr(97 + i)}: {choice}"
                 for i, choice in enumerate(chatResponse.choices)
             )
-            embed.add_field(name="選択肢一覧", value=formatted_choices, inline=False)
+            embeds.append(
+                discord.Embed(title="選択肢一覧", description=formattedChoices)
+            )
 
-        return embed
+        embeds.append(discord.Embed(description=chatResponse.message))
+
+        return embeds
 
     def createResponseView(
         self, chatResponse: ChatResponse, returnCallback, modalCallback
@@ -80,7 +117,7 @@ class AIChatCog(commands.Cog):
                 "role": "system",
                 "content": (
                     "アドベンチャーゲームのように会話を返します。ユーザーからのキャラクター説明は以下のとおりです。\n"
-                    f"{intro}\n\nchoicesには会話の選択肢を返してください。"
+                    f"{intro}\n\nchoicesには私が返すべき会話の選択肢を返してください。"
                     "選択肢は最大24個まで増やすことができます。\nあなたは最初に私に話しかけてください。"
                 ),
             }
@@ -88,7 +125,7 @@ class AIChatCog(commands.Cog):
 
         response = await self.ai.chat.completions.parse(
             messages=messages,
-            model="gemini-2.5-flash",
+            model=MODEL,
             response_format=ChatResponse,
         )
         messages.append(
@@ -108,7 +145,7 @@ class AIChatCog(commands.Cog):
             await inter.edit_original_response(content="生成中...", view=None)
             response = await self.ai.chat.completions.parse(
                 messages=messages,
-                model="gemini-2.5-flash",
+                model=MODEL,
                 response_format=ChatResponse,
             )
             messages.append(
@@ -121,7 +158,7 @@ class AIChatCog(commands.Cog):
             chatResponse = response.choices[0].message.parsed
             view = self.createResponseView(chatResponse, returnResponse, openModal)
             await inter.edit_original_response(
-                embed=self.createEmbed(chatResponse),
+                embeds=self.createEmbed(chatResponse),
                 view=view,
             )
 
@@ -143,7 +180,7 @@ class AIChatCog(commands.Cog):
                     )
                     response = await _self.ai.chat.completions.parse(
                         messages=messages,
-                        model="gemini-2.5-flash",
+                        model=MODEL,
                         response_format=ChatResponse,
                     )
                     messages.append(
@@ -158,7 +195,7 @@ class AIChatCog(commands.Cog):
                         chatResponse, returnResponse, openModal
                     )
                     await modelIntaraction.edit_original_response(
-                        embed=_self.createEmbed(chatResponse),
+                        embeds=_self.createEmbed(chatResponse),
                         view=view,
                     )
 
@@ -170,7 +207,7 @@ class AIChatCog(commands.Cog):
         view = self.createResponseView(chatResponse, returnResponse, openModal)
 
         await interaction.followup.send(
-            embed=self.createEmbed(chatResponse),
+            embeds=self.createEmbed(chatResponse),
             view=view,
         )
 
