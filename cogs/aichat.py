@@ -160,6 +160,7 @@ class AIChatCog(commands.Cog):
             chatResponse = response.choices[0].message.parsed
             view = self.createResponseView(chatResponse, returnResponse, openModal)
             await inter.edit_original_response(
+                content="",
                 embeds=self.createEmbed(chatResponse),
                 view=view,
             )
@@ -197,6 +198,7 @@ class AIChatCog(commands.Cog):
                         chatResponse, returnResponse, openModal
                     )
                     await modelIntaraction.edit_original_response(
+                        content="",
                         embeds=_self.createEmbed(chatResponse),
                         view=view,
                     )
