@@ -15,7 +15,6 @@ class Character(BaseModel):
     feeling: str
     favorability: float
     currentLocation: str
-    bodyInfo: BodyInfo
 
 
 class ChatResponse(BaseModel):
@@ -38,7 +37,7 @@ class AIChatCog(commands.Cog):
             discord.Embed(
                 title="情報",
                 description=f"""
-                    好感度: {chatResponse.character.favorability * 100}
+                    好感度: {chatResponse.character.favorability * 100}%
                     今の気分: {chatResponse.character.feeling}
                     現在地: {chatResponse.character.currentLocation}
                 """.replace("    ", ""),
