@@ -7,7 +7,7 @@ from discord.ext import commands
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-2.5-pro"
 
 
 class BodyInfo(BaseModel):
