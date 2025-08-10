@@ -7,7 +7,7 @@ from discord.ext import commands
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-MODEL = "gemini-2.5-pro"
+MODEL = "gemini-2.5-flash"
 
 
 class BodyInfo(BaseModel):
@@ -38,7 +38,7 @@ class AIChatCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.ai = AsyncOpenAI(
-            api_key="paicha_is_god", base_url="https://capi.voids.top/v2/"
+            api_key="paicha_kasudakara_sinde", base_url="https://capi.voids.top/v2/"
         )
 
     def createEmbed(self, chatResponse: ChatResponse) -> List[discord.Embed]:
