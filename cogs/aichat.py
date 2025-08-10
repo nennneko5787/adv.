@@ -10,16 +10,6 @@ from pydantic import BaseModel
 MODEL = "gemini-2.5-flash"
 
 
-class BodyInfo(BaseModel):
-    height: float
-    weight: float
-    bmi: float
-    bodyFatPercentage: float
-    bust: float
-    waist: float
-    hip: float
-
-
 class Character(BaseModel):
     name: str
     feeling: str
@@ -51,18 +41,6 @@ class AIChatCog(commands.Cog):
                     好感度: {chatResponse.character.favorability * 100}
                     今の気分: {chatResponse.character.feeling}
                     現在地: {chatResponse.character.currentLocation}
-                """.replace("    ", ""),
-            )
-            .add_field(
-                name="体の状態",
-                value=f"""
-                    身長: {chatResponse.character.bodyInfo.height}
-                    体重: {chatResponse.character.bodyInfo.weight}
-                    BMI: {chatResponse.character.bodyInfo.bmi}
-                    体脂肪率: {chatResponse.character.bodyInfo.bodyFatPercentage}
-                    B: {chatResponse.character.bodyInfo.bust}
-                    W: {chatResponse.character.bodyInfo.waist}
-                    H: {chatResponse.character.bodyInfo.hip}
                 """.replace("    ", ""),
             )
             .set_author(name=chatResponse.character.name)
